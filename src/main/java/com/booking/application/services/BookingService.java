@@ -13,7 +13,6 @@ import com.booking.application.entites.GuestEntity;
 import com.booking.application.entites.PropertyEntity;
 import com.booking.application.entites.UserEntity;
 import com.booking.application.repositories.BookingRepository;
-import com.booking.application.repositories.GuestRepository;
 import com.booking.application.repositories.PropertyRepository;
 import com.booking.application.repositories.UserRepository;
 
@@ -24,20 +23,18 @@ public class BookingService {
     private final UserRepository user_repo;
     private final PropertyRepository property_repo;
     private final BookingRepository booking_repo;
-    private final GuestRepository guest_repo;
 
     @Autowired
     public BookingService(UserRepository user_repo,
             PropertyRepository property_repo,
-            BookingRepository booking_repo,
-            GuestRepository guest_repo) {
+            BookingRepository booking_repo) {
         this.user_repo = user_repo;
         this.property_repo = property_repo;
         this.booking_repo = booking_repo;
-        this.guest_repo = guest_repo;
     }
 
     // implement exception handling and implement AOP concepts as well!!
+    @RedisLock(ttl = 6000)
     @Transactional
     public BookingEntity createBooking(BookingRequestDTO bookingRequest) {
         UserEntity user = user_repo.findById(bookingRequest.getUserId())
@@ -46,7 +43,6 @@ public class BookingService {
                 .orElseThrow(() -> new RuntimeException("Property not found \n"));
 
         BookingEntity booking = new BookingEntity();
-        booking.setUser(user);
         booking.setUser(user);
         booking.setProperty(property);
         booking.setCheakIn(bookingRequest.getCheakIn());
@@ -58,9 +54,16 @@ public class BookingService {
                     GuestEntity guest = new GuestEntity();
                     guest.setName(guestDTO.getName());
                     guest.setAge(guestDTO.getAge());
+                    guest.setBooking(booking);
                     return guest;
                 }).collect(Collectors.toList());
         booking.setGuests(guestList);
+        // cheak the db for overlapping booking to. and set the status to FAIL if not
+        // available
+        if (booking_repo.existsOverlappingBookings(property.getPropertyId(),
+                bookingRequest.getCheakIn(),
+                bookingRequest.getCheakOut()))
+            throw new IllegalStateException("Overlapping Booking\n");
         return booking_repo.save(booking);
 
     }

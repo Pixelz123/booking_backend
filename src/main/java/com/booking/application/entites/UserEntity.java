@@ -27,7 +27,7 @@ public class UserEntity {
     @PrePersist
     public void generateId() {
         if (userId == null || userId.isBlank()) {
-            this.userId = UUID.randomUUID().toString();  // ✅ UUID as string
+            this.userId = UUID.randomUUID().toString();  
         }
     }
 
@@ -42,11 +42,12 @@ public class UserEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "userId"))
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "roles")
     public Set<Role> roles;
 
-    @OneToMany(mappedBy = "user") // non owning side of booking user relation
+    @OneToMany(mappedBy = "user")
+    // non owning side of booking user relation
     private List<BookingEntity> booking;
 
 }

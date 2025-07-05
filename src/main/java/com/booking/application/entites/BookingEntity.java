@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -34,13 +35,14 @@ public class BookingEntity {
             this.bookingId = UUID.randomUUID().toString(); 
         }
     }
-
-    @ManyToOne(fetch = FetchType.LAZY) // this is the owning side of booking-user relation
-    @JoinColumn(name = "userId") // name of the FK PK of user
+    // (host)
+    @ManyToOne(fetch = FetchType.EAGER) // this is the owning side of booking-user relation
+    @JsonIgnore
+    @JoinColumn(name = "user_id") // name of the FK PK of user
     private UserEntity user;
 
-    @OneToOne
-    @JoinColumn(name = "propertyId") // owning side of Booking-property relation and the name of FK
+    @ManyToOne(fetch =FetchType.EAGER)
+    @JoinColumn(name = "property_id") // owning side of Booking-property relation and the name of FK
     private PropertyEntity property;
 
     // in the guest class we try to map this to "booking" member

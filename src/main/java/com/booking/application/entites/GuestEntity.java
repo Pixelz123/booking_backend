@@ -2,6 +2,8 @@ package com.booking.application.entites;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +27,7 @@ public class GuestEntity {
     @PrePersist
     public void generateId() {
         if (guestId == null || guestId.isBlank()) {
-            this.guestId = UUID.randomUUID().toString();  // ✅ UUID as string
+            this.guestId = UUID.randomUUID().toString();  
         }
     }
 
@@ -38,7 +40,6 @@ public class GuestEntity {
     @Enumerated(EnumType.STRING)
     private PersonType catagory;
 
-    @PrePersist
     @PreUpdate
     public void preAssignCatagory() {
         this.catagory = PersonType.fromAge(this.age);
@@ -46,8 +47,9 @@ public class GuestEntity {
 
     // owning side for booking-guest relation 
     // name of FK is bookingId PK of booking Entity
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "bookingId", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "booking_id", nullable = false)
+    @JsonIgnore
     private BookingEntity booking;
 
 }

@@ -2,10 +2,10 @@ package com.booking.application.entites;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,17 +18,17 @@ import lombok.Data;
 @Table(name = "properties")
 public class PropertyEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public String propertyId;
     @PrePersist
     public void generateId() {
         if (propertyId == null || propertyId.isBlank()) {
-            this.propertyId = UUID.randomUUID().toString();  // ✅ UUID as string
+            this.propertyId = UUID.randomUUID().toString();  
         }
     }
     
     @ManyToOne
-    @JoinColumn(name="hostId")
+    @JoinColumn(name="user_id")
+    @JsonIgnore
     public UserEntity user; 
 
     @Column(nullable=false)
