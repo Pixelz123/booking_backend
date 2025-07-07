@@ -24,7 +24,7 @@ public class JwtAuthenticatorProvider implements AuthenticationProvider {
             throw new BadCredentialsException("User does not exist..\n");
         }
         UserEntity user = user_services.loadUserByUsername(username);
-        if (!jwt_services.validateToken(token)) {
+        if (!jwt_services.validateToken(token)|| user==null) {
             throw new BadCredentialsException("Invalid JWT token");
         }
         return new JwtAuthenticationToken(user, user.getAuthorities());

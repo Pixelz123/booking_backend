@@ -37,7 +37,7 @@ public class BookingService {
     @RedisLock(ttl = 6000)
     @Transactional
     public BookingEntity createBooking(BookingRequestDTO bookingRequest) {
-        UserEntity user = user_repo.findById(bookingRequest.getUserId())
+        UserEntity user = user_repo.findByUsername(bookingRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found\n"));
         PropertyEntity property = property_repo.findById(bookingRequest.getPropertyId())
                 .orElseThrow(() -> new RuntimeException("Property not found \n"));

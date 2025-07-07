@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -58,7 +59,7 @@ public class PropertyEntity {
     @Column (nullable=true)
     public String heroImageSrc;
     
-    @OneToMany(mappedBy="property")
+    @OneToMany(mappedBy="property",cascade=CascadeType.ALL)
     public List<ImageEntity> image;
 
     @Column

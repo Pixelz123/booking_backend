@@ -1,12 +1,13 @@
 package com.booking.application.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.booking.application.dto.UserAuthRequestDTO;
 import com.booking.application.dto.UserAuthResponseDTO;
+import com.booking.application.entites.Role;
 import com.booking.application.entites.UserEntity;
 import com.booking.application.repositories.UserRepository;
 import com.booking.application.services.JwtService;
@@ -37,9 +39,12 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getUsername(),
                         authRequest.getPassword()));
-        UserDetails user = (UserDetails) auth.getPrincipal();
-        String token = jwt_service.createToken(user.getUsername());
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserAuthResponseDTO(user.getUsername(), token));
+        UserEntity user = (UserEntity) auth.getPrincipal();
+        String token = jwt_service.createToken(user);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserAuthResponseDTO(
+                                                                  user.getUsername(),
+                                                                  token,
+                                                                  user.getRoles()));
     }
 
     @PostMapping("/register")
@@ -50,9 +55,14 @@ public class AuthController {
         UserEntity user=new UserEntity();
         user.setUsername(authRequest.getUsername());
         user.setPassword(passwordEncoder.encode(authRequest.getPassword()));
+        user.setRoles(authRequest.getRoles() == null || authRequest.getRoles().isEmpty() ?
+                      Set.of(Role.USER) : authRequest.getRoles());
         UserEntity new_user=user_repo.save(user);
-        String token = jwt_service.createToken(new_user.getUsername());
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserAuthResponseDTO(new_user.getUsername(),token));
+        String token = jwt_service.createToken(new_user);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new UserAuthResponseDTO(
+                                                                     new_user.getUsername(),
+                                                                     token,
+                                                                     new_user.getRoles()));
 
 
     }

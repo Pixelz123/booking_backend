@@ -10,26 +10,38 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.booking.application.services.UserService;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
+
+    private final UserService userDetails;
+    private final JwtAuthenticatorProvider jwtAuthenticatorProvider;
+    private final JwtAuthFilter jwtAuthFilter;
+
     @Autowired
-    private UserService userDetails;
-    @Autowired
-    private JwtAuthenticatorProvider jwtAuthenticatorProvider;
+    public SecurityConfig(UserService userDetails,
+                          JwtAuthenticatorProvider jwtAuthenticatorProvider,
+                          JwtAuthFilter jwtAuthFilter) {
+        this.userDetails = userDetails;
+        this.jwtAuthenticatorProvider = jwtAuthenticatorProvider;
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
+    public AuthenticationManager authenticationManager() {
         List<AuthenticationProvider> providers = new ArrayList<>();
-        providers.add(daoAuthenticationProvider()); // for username/password login
-        providers.add(jwtAuthenticatorProvider); // for token-based auth
+        providers.add(daoAuthenticationProvider());
+        providers.add(jwtAuthenticatorProvider);
         return new ProviderManager(providers);
     }
 
@@ -42,17 +54,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   AuthenticationManager authenticationManager) throws Exception {
         return http
+                .authenticationManager(authenticationManager) 
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 
     @Bean
@@ -60,3 +75,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+

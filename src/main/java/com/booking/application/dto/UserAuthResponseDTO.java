@@ -1,5 +1,9 @@
 package com.booking.application.dto;
 
+import java.util.Set;
+
+import com.booking.application.entites.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,4 +15,5 @@ public class UserAuthResponseDTO
 {
     private String username;
     private String token;
+    private Set<Role>roles;
 }

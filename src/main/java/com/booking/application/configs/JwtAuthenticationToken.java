@@ -10,12 +10,11 @@ import com.booking.application.entites.UserEntity;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private final String token;
-    private final UserEntity principal;
+    private  UserEntity principal;
 
-    public JwtAuthenticationToken(String token, UserEntity principal) {
+    public JwtAuthenticationToken(String token) {
         super(null);
         this.token = token;
-        this.principal = principal;
         setAuthenticated(false);
     }
 

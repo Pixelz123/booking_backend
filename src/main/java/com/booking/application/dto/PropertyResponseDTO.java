@@ -13,4 +13,5 @@ public class PropertyResponseDTO {
     private String city;
     private String heroImageSrc;
     private double price_per_night; 
+    private String name;
 }
