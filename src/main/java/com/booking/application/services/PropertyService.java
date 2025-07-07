@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.booking.application.dto.PropertyDetailDTO;
@@ -54,7 +55,7 @@ public class PropertyService {
         PropertyDetailDTO propertyDetail = new PropertyDetailDTO();
         List<Object[]> queryResultList = property_repo.getPropertyDetails(propertyId);
         Object[] result = queryResultList.get(0);
-        List<Object[]> ImageQueryResult = image_repo.getImage((String) result[0]);
+        List<Object[]> ImageQueryResult = image_repo.getImage(propertyId);
         List<String> imageList = new ArrayList<>();
         propertyDetail.setProperty_id((String) result[0]);
         propertyDetail.setUsername((String) result[1]);
@@ -67,8 +68,8 @@ public class PropertyService {
         propertyDetail.setPrice_per_night((double) result[8]);
         propertyDetail.setName((String) result[9]);
         propertyDetail.setHero_image_src((String) result[10]);
-        for (Object image_src : ImageQueryResult) {
-            imageList.add((String) image_src);
+        for (Object[] image_src : ImageQueryResult) {
+            imageList.add((String) image_src[0]);
         }
         propertyDetail.setImageList(imageList);
 
@@ -76,6 +77,7 @@ public class PropertyService {
     }
 
     public void hostNewProperty(PropertyDetailDTO new_property) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<String> images = new_property.getImageList();
         PropertyEntity newProperty = new PropertyEntity();
         newProperty.setName(new_property.getName());
@@ -86,7 +88,7 @@ public class PropertyService {
         newProperty.setPostal_code(new_property.getPostal_code());
         newProperty.setHeroImageSrc(new_property.getHero_image_src());
         newProperty.setPrice_per_night(new_property.getPrice_per_night());
-        UserEntity user = user_service.loadUserByUsername(new_property.getUsername());
+        UserEntity user = user_service.loadUserByUsername(username);
         newProperty.setUser(user);
         List<ImageEntity> imageList = images.stream()
                 .map(imageSrc -> {
@@ -100,7 +102,8 @@ public class PropertyService {
         property_repo.save(newProperty);
     }
 
-    public List<PropertyResponseDTO> getHostProperties(String hostname) {
+    public List<PropertyResponseDTO> getHostProperties() {
+        String hostname = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Object[]> queryResult = property_repo.getHostProperties(hostname);
         List<PropertyResponseDTO> hostProperties = queryResult
                 .stream()

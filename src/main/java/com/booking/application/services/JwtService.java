@@ -3,10 +3,9 @@ package com.booking.application.services;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-
-import com.booking.application.entites.UserEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,12 +16,13 @@ public class JwtService {
      private final String SECRET_KEY = "jwt_hyper_secret_key_must_not_be_shared##@#";
     private final long EXPIRATION_TIME_MILI=360000000;
 
-    public String createToken(UserEntity user)
+    public String createToken(Authentication authentication)
     {
+
        return Jwts
               .builder()
-              .setSubject(user.getUsername())
-              .claim("roles", user.getAuthorities().stream()
+              .setSubject(authentication.getName())
+              .claim("roles", authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList())
               .setIssuedAt(new Date(System.currentTimeMillis()))

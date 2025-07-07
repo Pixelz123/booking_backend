@@ -45,7 +45,8 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, String
                             p.postal_code,
                             p.address,
                             p.price_per_night,
-                            p.name
+                            p.name,
+                            p.hero_image_src
                      FROM properties p LEFT JOIN users u
                                               ON u.user_id=p.user_id
                       WHERE p.property_id= :property_id;

@@ -29,7 +29,7 @@ public class ImageEntity {
             this.imageId = UUID.randomUUID().toString();
         }
     }
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="property_id")
     @JsonIgnore
     public PropertyEntity property; 

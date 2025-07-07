@@ -10,7 +10,7 @@ import com.booking.application.entites.UserEntity;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private final String token;
-    private  UserEntity principal;
+    private UserEntity principal;
 
     public JwtAuthenticationToken(String token) {
         super(null);
@@ -24,6 +24,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         this.principal = principal;
         setAuthenticated(true);
     }
+
     @Override
     public UserDetails getPrincipal() {
         return principal;
@@ -34,5 +35,12 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         return token;
     }
 
+    @Override
+    public String getName() {
+        if (principal instanceof UserEntity) {
+            return principal.getUsername();
+        }
+        return principal != null ? principal.toString() : null;
+    }
 
 }

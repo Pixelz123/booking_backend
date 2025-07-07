@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.booking.application.dto.BookingRequestDTO;
@@ -37,7 +38,9 @@ public class BookingService {
     @RedisLock(ttl = 6000)
     @Transactional
     public BookingEntity createBooking(BookingRequestDTO bookingRequest) {
-        UserEntity user = user_repo.findByUsername(bookingRequest.getUsername())
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserEntity user = user_repo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found\n"));
         PropertyEntity property = property_repo.findById(bookingRequest.getPropertyId())
                 .orElseThrow(() -> new RuntimeException("Property not found \n"));
