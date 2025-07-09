@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.booking.application.dto.BookingRequestDTO;
 import com.booking.application.dto.PropertyDetailDTO;
 import com.booking.application.dto.PropertyResponseDTO;
-import com.booking.application.repositories.BookingRepository;
 import com.booking.application.services.BookingService;
 import com.booking.application.services.PropertyService;
 
@@ -32,8 +30,6 @@ public class ApiController {
     @Autowired
     private PropertyService property_service;
 
-    @Autowired
-    private BookingRepository prop_repo;
 
     @PostMapping("/booking")
     public ResponseEntity<?> processBooking(@RequestBody BookingRequestDTO bookingRequest) {
@@ -45,9 +41,7 @@ public class ApiController {
    
     @GetMapping("/userBookings")
     public ResponseEntity<?> getUserBooking(){
-        String username=SecurityContextHolder.getContext().getAuthentication().getName();
-        
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(prop_repo.getUserBookings(username));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(booking_service.getUserBookings());
     }
 
     @PreAuthorize("hasRole('HOST')")

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.booking.application.dto.BookingRequestDTO;
+import com.booking.application.dto.BookingResponseDTO;
 import com.booking.application.entites.BookingEntity;
 import com.booking.application.entites.BookingStatus;
 import com.booking.application.entites.GuestEntity;
@@ -81,7 +82,10 @@ public class BookingService {
         LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        // Step 3: Use ChronoUnit.DAYS.between() to get the difference in days.
         return ChronoUnit.DAYS.between(localDate1, localDate2);
+    }
+    public List<BookingResponseDTO> getUserBookings(){
+         String username=SecurityContextHolder.getContext().getAuthentication().getName();
+         return booking_repo.getUserBookings(username);
     }
 }

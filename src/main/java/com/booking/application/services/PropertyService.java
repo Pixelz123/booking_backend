@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class PropertyService {
         }
         return propertyList;
     }
-
+    @Cacheable(value = "propertyDetails", key = "#propertyId")
     public PropertyDetailDTO getPropertyDetails(String propertyId) {
         PropertyDetailDTO propertyDetail = property_repo.getPropertyDetails(propertyId);
         List<String>imageList=image_repo.getImage(propertyId);

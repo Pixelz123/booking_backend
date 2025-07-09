@@ -1,6 +1,7 @@
 package com.booking.application.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     public UserRepository user_repo; 
     @Override
+    @Cacheable(value = "users", key = "#username")
     public UserEntity loadUserByUsername(String username){
        UserEntity user=user_repo.findByUsername(username).get();
        return user;
