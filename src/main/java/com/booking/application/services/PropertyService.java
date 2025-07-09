@@ -50,30 +50,9 @@ public class PropertyService {
     }
 
     public PropertyDetailDTO getPropertyDetails(String propertyId) {
-        PropertyDetailDTO propertyDetail = new PropertyDetailDTO();
-        List<Object[]> queryResultList = property_repo.getPropertyDetails(propertyId);
-        Object[] result = queryResultList.get(0);
-        List<Object[]> ImageQueryResult = image_repo.getImage(propertyId);
-        List<String> imageList = new ArrayList<>();
-        propertyDetail.setProperty_id((String) result[0]);
-        propertyDetail.setHostname((String) result[1]);
-        propertyDetail.setDescription((String) result[2]);
-        propertyDetail.setCity((String) result[3]);
-        propertyDetail.setState((String) result[4]);
-        propertyDetail.setCountry((String) result[5]);
-        propertyDetail.setPostal_code((int) result[6]);
-        propertyDetail.setAddress((String) result[7]);
-        propertyDetail.setPrice_per_night((double) result[8]);
-        propertyDetail.setName((String) result[9]);
-        propertyDetail.setHero_image_src((String) result[10]);
-        propertyDetail.setBeds((int)result[11]);
-        propertyDetail.setBathroom((int)result[12]);
-        propertyDetail.setGuests((int)result[13]);
-        for (Object[] image_src : ImageQueryResult) {
-            imageList.add((String) image_src[0]);
-        }
+        PropertyDetailDTO propertyDetail = property_repo.getPropertyDetails(propertyId);
+        List<String>imageList=image_repo.getImage(propertyId);
         propertyDetail.setImageList(imageList);
-
         return propertyDetail;
     }
 
@@ -105,22 +84,7 @@ public class PropertyService {
 
     public List<PropertyResponseDTO> getHostProperties() {
         String hostname = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<Object[]> queryResult = property_repo.getHostProperties(hostname);
-        List<PropertyResponseDTO> hostProperties = queryResult
-                .stream()
-                .map(
-                        row -> {
-                            PropertyResponseDTO property = new PropertyResponseDTO();
-                            property.setPropertyId((String) row[0]);
-                            property.setHostname((String) row[1]);
-                            property.setCity((String) row[2]);
-                            property.setHeroImageSrc((String) row[3]);
-                            property.setPrice_per_night((double) row[4]);
-                            property.setName((String) row[5]);
-
-                            return property;
-                        })
-                .collect(Collectors.toList());
+        List<PropertyResponseDTO> hostProperties = property_repo.getHostProperties(hostname);
         return hostProperties;
 
     }

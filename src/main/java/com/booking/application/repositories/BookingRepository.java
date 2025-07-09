@@ -41,7 +41,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity, String> 
                                 b.cheakIn,
                                 b.cheakOut,
                                 SIZE(b.guests),
-                                100.50
+                                b.totalprice
                             )
                             FROM BookingEntity b
                             JOIN b.property p

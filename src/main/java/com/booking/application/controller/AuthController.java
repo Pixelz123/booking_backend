@@ -78,7 +78,7 @@ public class AuthController {
                 UserEntity user = user_repo.findByUsername(username)
                                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-                if (user.getRoles().contains(Role.USER)) {
+                if (user.getRoles().contains(Role.USER) || user.getRoles().contains(Role.HOST)) {
                         if (!user.getRoles().contains(Role.HOST)) {
                                 user.getRoles().clear();
                                 user.getRoles().add(Role.HOST);

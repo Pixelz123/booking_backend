@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.booking.application.dto.PropertyDetailDTO;
+import com.booking.application.dto.PropertyResponseDTO;
 import com.booking.application.entites.PropertyEntity;
 
 @Repository
@@ -32,9 +34,11 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, String
                      @Param("cheakIn") Date cheakIn,
                      @Param("cheakOut") Date cheakOut);
 
-       @Query(value = """
-                     SELECT p.property_id,
-                            u.username,
+       @Query("""
+                     SELECT new com.booking.application.dto.PropertyDetailDTO
+                           (
+                            p.propertyId,
+                            p.user.username,
                             p.description,
                             p.city,
                             p.state,
@@ -43,30 +47,33 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, String
                             p.address,
                             p.price_per_night,
                             p.name,
-                            p.hero_image_src,
+                            p.heroImageSrc,
                             p.beds,
+                            p.bedroom,
                             p.bathroom,
-                            p.guests
-                     FROM properties p LEFT JOIN users u
-                                              ON u.user_id=p.user_id
-                      WHERE p.property_id= :property_id;
+                            p.guests,
+                            null
+                          )
+                     FROM PropertyEntity p
+                     WHERE p.propertyId= :property_id
+                     """)
+       public PropertyDetailDTO getPropertyDetails(@Param("property_id") String property_id);
 
-                     """, nativeQuery = true)
-       public List<Object[]> getPropertyDetails(@Param("property_id") String property_id);
-
-       @Query(value = """
-                     SELECT p.property_id,
-                            u.username,
-                            p.city,
-                            p.hero_image_src,
-                            p.price_per_night,
-                            p.name
-                     FROM
-                           properties p LEFT JOIN users u ON u.user_id=p.user_id
-                     WHERE
-                           u.username = :hostname
-
-                     """, nativeQuery = true)
-       public List<Object[]> getHostProperties(@Param("hostname") String hostname);
+       @Query("""
+                     SELECT new com.booking.application.dto.PropertyResponseDTO
+                           (
+                                 p.propertyId,
+                                 p.user.username,
+                                 p.city,
+                                 p.heroImageSrc,
+                                 p.price_per_night,
+                                 p.name
+                           )
+                          FROM
+                                PropertyEntity p
+                          WHERE
+                                p.user.username = :hostname
+                          """)
+       public List<PropertyResponseDTO> getHostProperties(@Param("hostname") String hostname);
 
 }

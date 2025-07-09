@@ -19,11 +19,11 @@ public class PropertyDetailDTO {
     private int postal_code;
     private String address;
     private double price_per_night;
-    private List<String>imageList;
     private String name;
     private String hero_image_src;
-    public int guests;
+    public int beds;
     public int bedroom;
     public int bathroom;
-    public int beds;
+    public int guests;
+    private List<String>imageList;
 }

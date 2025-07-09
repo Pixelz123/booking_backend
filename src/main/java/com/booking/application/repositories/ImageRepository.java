@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 import com.booking.application.entites.ImageEntity;
 
 public interface  ImageRepository extends JpaRepository<ImageEntity, String> {
-        @Query(value="""
-            SELECT image_src
-            FROM property_images
-            WHERE property_id = :property_id
-            """,nativeQuery=true)                                    
-    public List<Object[]> getImage(@Param("property_id") String property_id);
+        @Query("""
+            SELECT pi.image_src
+            FROM ImageEntity pi JOIN pi.property
+            WHERE pi.property.propertyId = :property_id
+            """)                                    
+    public List<String> getImage(@Param("property_id") String property_id);
 }
