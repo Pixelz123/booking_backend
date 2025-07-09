@@ -1,5 +1,9 @@
 package com.booking.application.services;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,18 +43,20 @@ public class BookingService {
     @Transactional
     public BookingEntity createBooking(BookingRequestDTO bookingRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
         UserEntity user = user_repo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found\n"));
+        System.out.println("go the user details ..\n");
         PropertyEntity property = property_repo.findById(bookingRequest.getPropertyId())
                 .orElseThrow(() -> new RuntimeException("Property not found \n"));
-
         BookingEntity booking = new BookingEntity();
         booking.setUser(user);
         booking.setProperty(property);
         booking.setCheakIn(bookingRequest.getCheakIn());
         booking.setCheakOut(bookingRequest.getCheakOut());
         booking.setStatus(BookingStatus.INITIATED);
+        long days = getDaysBetween(bookingRequest.getCheakIn(), bookingRequest.getCheakOut());
+        double pricePayable = days * property.price_per_night;
+        booking.setTotalprice(pricePayable);
 
         List<GuestEntity> guestList = bookingRequest.getGuestList().stream()
                 .map(guestDTO -> {
@@ -69,5 +75,13 @@ public class BookingService {
             throw new IllegalStateException("Overlapping Booking\n");
         return booking_repo.save(booking);
 
+    }
+
+    public static long getDaysBetween(Date date1, Date date2) {
+        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        // Step 3: Use ChronoUnit.DAYS.between() to get the difference in days.
+        return ChronoUnit.DAYS.between(localDate1, localDate2);
     }
 }

@@ -30,9 +30,7 @@ public class PropertyService {
         List<PropertyResponseDTO> propertyList = new ArrayList<>();
         List<Object[]> queryOutput = property_repo.getProperties(propertyRequest.getLocationQueryString(),
                 propertyRequest.getCheakIn(),
-                propertyRequest.getCheakOut(),
-                propertyRequest.getMinPrice(),
-                propertyRequest.getMaxPrice());
+                propertyRequest.getCheakOut());
         for (Object[] row : queryOutput) {
             String property_id = (String) row[0];
             String hostname = (String) row[1];
@@ -58,7 +56,7 @@ public class PropertyService {
         List<Object[]> ImageQueryResult = image_repo.getImage(propertyId);
         List<String> imageList = new ArrayList<>();
         propertyDetail.setProperty_id((String) result[0]);
-        propertyDetail.setUsername((String) result[1]);
+        propertyDetail.setHostname((String) result[1]);
         propertyDetail.setDescription((String) result[2]);
         propertyDetail.setCity((String) result[3]);
         propertyDetail.setState((String) result[4]);
@@ -68,6 +66,9 @@ public class PropertyService {
         propertyDetail.setPrice_per_night((double) result[8]);
         propertyDetail.setName((String) result[9]);
         propertyDetail.setHero_image_src((String) result[10]);
+        propertyDetail.setBeds((int)result[11]);
+        propertyDetail.setBathroom((int)result[12]);
+        propertyDetail.setGuests((int)result[13]);
         for (Object[] image_src : ImageQueryResult) {
             imageList.add((String) image_src[0]);
         }

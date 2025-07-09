@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PropertyRequestDTO {
-    private String locationQueryString;
+public class BookingResponseDTO{
+    private String bookingId;
+    private PropertyResponseDTO property;
     private Date cheakIn;
     private Date cheakOut;
+    private int guests;
+    private double totalPrice;
 }

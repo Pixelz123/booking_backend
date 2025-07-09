@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GuestDTO {
     private  String name;
-    private  int age;
+    private  Integer age;
 }

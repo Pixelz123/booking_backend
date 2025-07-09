@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -49,7 +50,14 @@ public class BookingEntity {
     @OneToMany(mappedBy = "booking",cascade=CascadeType.ALL) // non owning side of Booking-guest relation
     public List<GuestEntity> guests; // following the OCP priniple
 
+    @Column(nullable=true)
+    public double totalprice;
+
+
+    @Column(nullable=true)
     public Date cheakIn;
+
+    @Column(nullable=true)
     public Date cheakOut;
 
     @Enumerated(EnumType.STRING)

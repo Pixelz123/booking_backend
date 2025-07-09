@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyDetailDTO {
     private String property_id;
-    private String username;
+    private String hostname;
     private String description;
     private String city;
     private String state;
@@ -22,4 +22,8 @@ public class PropertyDetailDTO {
     private List<String>imageList;
     private String name;
     private String hero_image_src;
+    public int guests;
+    public int bedroom;
+    public int bathroom;
+    public int beds;
 }

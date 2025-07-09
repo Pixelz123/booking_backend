@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,8 +49,6 @@ public class AuthController {
                                 user.getRoles()));
         }
 
-       
-
         @PostMapping("/register")
         public ResponseEntity<?> handleRegister(@RequestBody UserAuthRequestDTO authRequest) {
                 if (user_repo.findByUsername(authRequest.getUsername()).isPresent()) {
@@ -70,6 +70,34 @@ public class AuthController {
                                 token,
                                 user.getRoles()));
 
+        }
+
+        @PostMapping("/loginAsHost")
+        public ResponseEntity<?> handleHostLogin(@RequestBody UserAuthRequestDTO authRequest) {
+                String username = authRequest.getUsername();
+                System.out.println("login to host" + username);
+                UserEntity user = user_repo.findByUsername(username)
+                                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+                if (user.getRoles().contains(Role.USER)) {
+                        if (!user.getRoles().contains(Role.HOST)) {
+                                user.getRoles().add(Role.HOST);
+                                user_repo.save(user);
+                        }
+                } else {
+                        throw new IllegalStateException("Only users with the USER role can become a host");
+                }
+
+                // Re-authenticate user with updated roles
+                Authentication auth = new UsernamePasswordAuthenticationToken(user,
+                                null,
+                                user.getAuthorities());
+                String newToken = jwt_service.createToken(auth);
+
+                return ResponseEntity.ok(new UserAuthResponseDTO(
+                                user.getUsername(),
+                                newToken,
+                                user.getRoles()));
         }
 
 }

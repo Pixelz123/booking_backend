@@ -22,7 +22,6 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, String
                            FROM properties p LEFT JOIN users u ON p.user_id=u.user_id
                            WHERE
                                 p.address LIKE %:address% AND
-                                p.price_per_night BETWEEN  :minPrice AND :maxPrice AND
                                 p.property_id NOT IN (
                                      SELECT property_id
                                      FROM bookings
@@ -31,9 +30,7 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, String
                      """, nativeQuery = true)
        public List<Object[]> getProperties(@Param("address") String locationQueryString,
                      @Param("cheakIn") Date cheakIn,
-                     @Param("cheakOut") Date cheakOut,
-                     @Param("minPrice") double minPrice,
-                     @Param("maxPrice") double maxPrice);
+                     @Param("cheakOut") Date cheakOut);
 
        @Query(value = """
                      SELECT p.property_id,
@@ -46,7 +43,10 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity, String
                             p.address,
                             p.price_per_night,
                             p.name,
-                            p.hero_image_src
+                            p.hero_image_src,
+                            p.beds,
+                            p.bathroom,
+                            p.guests
                      FROM properties p LEFT JOIN users u
                                               ON u.user_id=p.user_id
                       WHERE p.property_id= :property_id;

@@ -6,12 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,15 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.booking.application.dto.BookingRequestDTO;
 import com.booking.application.dto.PropertyDetailDTO;
-import com.booking.application.dto.PropertyRequestDTO;
 import com.booking.application.dto.PropertyResponseDTO;
-import com.booking.application.dto.UserAuthResponseDTO;
-import com.booking.application.entites.BookingEntity;
-import com.booking.application.entites.Role;
-import com.booking.application.entites.UserEntity;
-import com.booking.application.repositories.UserRepository;
+import com.booking.application.repositories.BookingRepository;
 import com.booking.application.services.BookingService;
-import com.booking.application.services.JwtService;
 import com.booking.application.services.PropertyService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,55 +32,23 @@ public class ApiController {
     private BookingService booking_service;
     @Autowired
     private PropertyService property_service;
+
     @Autowired
-    private UserRepository user_repo;
-    @Autowired
-    private JwtService jwt_service;
+    private BookingRepository prop_repo;
 
     @PostMapping("/booking")
     public ResponseEntity<?> processBooking(@RequestBody BookingRequestDTO bookingRequest) {
-        BookingEntity booking = booking_service.createBooking(bookingRequest);
-        return ResponseEntity.ok(booking);
+        booking_service.createBooking(bookingRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body("BOOKING SUCESSFULL");
     }
 
-    @PostMapping("/properties")
-    public ResponseEntity<?> getProperties(@RequestBody PropertyRequestDTO propertyRequest) {
-        List<PropertyResponseDTO> propertyList = property_service.getProperties(propertyRequest);
-        return ResponseEntity.ok(propertyList);
-    }
-
-    @GetMapping("/propertyDetails/{property_id}")
-    public ResponseEntity<?> getPropertyDetails(@PathVariable String property_id) {
-        PropertyDetailDTO propertyDetail = property_service.getPropertyDetails(property_id);
-        return ResponseEntity.ok(propertyDetail);
-    }
-
-    @PostMapping("/loginAsHost")
-    public ResponseEntity<?> handleHostLogin() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("login to host" + username);
-        UserEntity user = user_repo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        if (user.getRoles().contains(Role.USER)) {
-            if (!user.getRoles().contains(Role.HOST)) {
-                user.getRoles().add(Role.HOST);
-                user_repo.save(user);
-            }
-        } else {
-            throw new IllegalStateException("Only users with the USER role can become a host");
-        }
-
-        // Re-authenticate user with updated roles
-        Authentication auth = new UsernamePasswordAuthenticationToken(user,
-                null,
-                user.getAuthorities());
-        String newToken = jwt_service.createToken(auth);
-
-        return ResponseEntity.ok(new UserAuthResponseDTO(
-                user.getUsername(),
-                newToken,
-                user.getRoles()));
+  
+   
+    @GetMapping("/userBookings")
+    public ResponseEntity<?> getUserBooking(){
+        String username=SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(prop_repo.getUserBookings(username));
     }
 
     @PreAuthorize("hasRole('HOST')")

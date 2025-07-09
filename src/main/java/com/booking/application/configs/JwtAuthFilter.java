@@ -25,7 +25,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/auth/");
+        return path.startsWith("/auth/") || path.startsWith("/public/");
     }
 
     @Override
@@ -34,6 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+        System.out.println("header for auth "+header+"\n");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
@@ -43,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 throw new ServletException("Authentication Error\n");
             }
         } else {
-            throw new IOException("Authorization header missing \n");
+            throw new IOException("Authorization header missing for "+request.getRequestURI()+"\n");
         }
 
         filterChain.doFilter(request, response);

@@ -53,13 +53,22 @@ public class PropertyEntity {
     @Column(nullable = true)
     public int postal_code;
 
-    @Column(nullable=true)
+    @Column(nullable = true)
     public String address;
-    
-    @Column (nullable=true)
+
+    @Column(nullable = true)
     public String heroImageSrc;
-    
-    @OneToMany(mappedBy="property",cascade=CascadeType.ALL)
+
+    @Column(nullable = true)
+    public int guests;
+    @Column(nullable = true)
+    public int bedroom;
+    @Column(nullable = true)
+    public int bathroom;
+    @Column(nullable = true)
+    public int beds;
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
     public List<ImageEntity> image;
 
     @Column
