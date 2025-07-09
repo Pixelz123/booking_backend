@@ -1,15 +1,11 @@
 spring:
-  security:
-    user:
-      name: disabled
   application:
     name: hotel-booking-backend
-  cache:
-    type: redis
+
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require
+    username: postgres.pnvvffaonordefxrywvn
+    password: q1w2e3r4t5y6u7i8o9p0!@#$%^&*()
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
@@ -27,15 +23,23 @@ spring:
       hibernate:
         format_sql: true
 
-  redis:
-    host: ${REDIS_HOST}
-    password: ${REDIS_PASSWORD}
-    ssl: true
-    port: 6379
+  data:
+    redis:
+      host: teaching-gator-22601.upstash.io
+      port: 6379
+      password: AVhJAAIjcDE5M2NlZTFlNWM5YmY0OTIyYWFmYWVjNjM5ZDQwZmVkNnAxMA
+      ssl: 
+       enabled: true # SSL flag will work if Lettuce is used (which is default)
+
+  cache:
+    type: redis
+
 logging:
   level:
-    org.springframework.cache: DEBUG
-    org.springframework.data.redis: DEBUG
+    root: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate: DEBUG
+    org.springframework.web: DEBUG
+
 jwt:
   secret: "jwt_hyper_secret_key_must_not_be_shared##@#"
-
