@@ -1,4 +1,7 @@
 spring:
+  security:
+    user:
+      name: disabled
   application:
     name: hotel-booking-backend
   cache:
@@ -35,3 +38,4 @@ logging:
     org.springframework.data.redis: DEBUG
 jwt:
   secret: "jwt_hyper_secret_key_must_not_be_shared##@#"
+
