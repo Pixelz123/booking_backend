@@ -1,0 +1,9 @@
+# Don't copy build artifacts — they'll be created during build stage
+build/
+.gradle/
+.git/
+.env
+*.log
+*.iml
+.idea/
+.DS_Store
