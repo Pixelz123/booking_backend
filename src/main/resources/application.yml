@@ -1,27 +1,37 @@
-spring: 
- application: 
-   name: hotel-booking-backend
- cache:
+spring:
+  application:
+    name: hotel-booking-backend
+  cache:
     type: redis
- datasource:
-    url: jdbc:postgresql://db.pnvvffaonordefxrywvn.supabase.co:5432/postgres?sslmode=require
-    username: postgres
-    password: q1w2e3r4t5y6u7i8o9p0!@#$%^&*()
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
- jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect 
-    hibernate: 
-     ddl-auto: update
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 30000
+      data-source-properties:
+        sslmode: require
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
     show-sql: true
     properties:
-     hibernate:
-      format_sql: true
+      hibernate:
+        format_sql: true
 
- redis:
-    host: localhost          
-    port: 6379 
+  redis:
+    host: ${REDIS_HOST}
+    password: ${REDIS_PASSWORD}
+    ssl: true
+    port: 6379
 logging:
   level:
     org.springframework.cache: DEBUG
     org.springframework.data.redis: DEBUG
-# postgresql://localhost:5432/bookingdb 
+jwt:
+  secret: "jwt_hyper_secret_key_must_not_be_shared##@#"

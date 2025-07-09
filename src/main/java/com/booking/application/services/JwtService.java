@@ -3,6 +3,7 @@ package com.booking.application.services;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -13,27 +14,29 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-     private final String SECRET_KEY = "jwt_hyper_secret_key_must_not_be_shared##@#";
-    private final long EXPIRATION_TIME_MILI=360000000;
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
+    private final long EXPIRATION_TIME_MILI = 360000000;
 
-    public String createToken(Authentication authentication)
-    {
+    public String createToken(Authentication authentication) {
 
-       return Jwts
-              .builder()
-              .setSubject(authentication.getName())
-              .claim("roles", authentication.getAuthorities().stream()
+        return Jwts
+                .builder()
+                .setSubject(authentication.getName())
+                .claim("roles", authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList())
-              .setIssuedAt(new Date(System.currentTimeMillis()))
-              .setExpiration(new Date (System.currentTimeMillis()+EXPIRATION_TIME_MILI))
-              .signWith(getSecurityKey())
-              .compact();
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MILI))
+                .signWith(getSecurityKey())
+                .compact();
     }
+
     private Key getSecurityKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
-     public boolean validateToken(String token) {
+
+    public boolean validateToken(String token) {
         String username = extractUsername(token);
         return (!isTokenExpired(token) && username != null && !username.isEmpty());
     }
@@ -58,6 +61,5 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
 
 }

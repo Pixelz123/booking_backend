@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.booking.application.dto.BookingRequestDTO;
 import com.booking.application.dto.BookingResponseDTO;
@@ -22,7 +25,6 @@ import com.booking.application.repositories.BookingRepository;
 import com.booking.application.repositories.PropertyRepository;
 import com.booking.application.repositories.UserRepository;
 
-import jakarta.transaction.Transactional;
 
 @Service
 public class BookingService {
@@ -41,7 +43,7 @@ public class BookingService {
 
     // implement exception handling and implement AOP concepts as well!!
     @RedisLock(ttl = 6000)
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public BookingEntity createBooking(BookingRequestDTO bookingRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = user_repo.findByUsername(username)
@@ -84,6 +86,7 @@ public class BookingService {
 
         return ChronoUnit.DAYS.between(localDate1, localDate2);
     }
+    @Transactional(readOnly = true)
     public List<BookingResponseDTO> getUserBookings(){
          String username=SecurityContextHolder.getContext().getAuthentication().getName();
          return booking_repo.getUserBookings(username);

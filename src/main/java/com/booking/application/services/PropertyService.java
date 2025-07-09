@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.booking.application.dto.PropertyDetailDTO;
 import com.booking.application.dto.PropertyRequestDTO;
@@ -18,6 +21,7 @@ import com.booking.application.entites.UserEntity;
 import com.booking.application.repositories.ImageRepository;
 import com.booking.application.repositories.PropertyRepository;
 
+
 @Service
 public class PropertyService {
     @Autowired
@@ -27,6 +31,8 @@ public class PropertyService {
     @Autowired
     UserService user_service;
 
+
+    @Transactional(readOnly = true)
     public List<PropertyResponseDTO> getProperties(PropertyRequestDTO propertyRequest) {
         List<PropertyResponseDTO> propertyList = new ArrayList<>();
         List<Object[]> queryOutput = property_repo.getProperties(propertyRequest.getLocationQueryString(),
@@ -49,14 +55,17 @@ public class PropertyService {
         }
         return propertyList;
     }
+
     @Cacheable(value = "propertyDetails", key = "#propertyId")
+    @Transactional(readOnly = true)
     public PropertyDetailDTO getPropertyDetails(String propertyId) {
         PropertyDetailDTO propertyDetail = property_repo.getPropertyDetails(propertyId);
-        List<String>imageList=image_repo.getImage(propertyId);
+        List<String> imageList = image_repo.getImage(propertyId);
         propertyDetail.setImageList(imageList);
         return propertyDetail;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public void hostNewProperty(PropertyDetailDTO new_property) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<String> images = new_property.getImageList();
@@ -82,7 +91,7 @@ public class PropertyService {
         newProperty.setImage(imageList);
         property_repo.save(newProperty);
     }
-
+    @Transactional(readOnly = true)
     public List<PropertyResponseDTO> getHostProperties() {
         String hostname = SecurityContextHolder.getContext().getAuthentication().getName();
         List<PropertyResponseDTO> hostProperties = property_repo.getHostProperties(hostname);

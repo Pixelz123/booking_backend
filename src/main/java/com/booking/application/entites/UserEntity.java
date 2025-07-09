@@ -43,7 +43,7 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     public String password;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user",fetch=FetchType.EAGER)
     private List<PropertyEntity> properties;
 
     @ElementCollection(fetch = FetchType.EAGER)
