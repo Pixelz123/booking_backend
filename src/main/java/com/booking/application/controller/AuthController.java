@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,6 +80,7 @@ public class AuthController {
 
                 if (user.getRoles().contains(Role.USER)) {
                         if (!user.getRoles().contains(Role.HOST)) {
+                                user.getRoles().clear();
                                 user.getRoles().add(Role.HOST);
                                 user_repo.save(user);
                         }

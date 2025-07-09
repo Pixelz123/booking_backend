@@ -2,9 +2,10 @@ spring:
  application: 
    name: hotel-booking-backend
  datasource:
-    url: jdbc:postgresql://localhost:5432/bookingdb
-    username: java_backend
-    password: 1234
+    url: jdbc:postgresql://db.pnvvffaonordefxrywvn.supabase.co:5432/postgres?sslmode=require
+    username: postgres
+    password: q1w2e3r4t5y6u7i8o9p0!@#$%^&*()
+    driver-class-name: org.postgresql.Driver
  jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect 
     hibernate: 
@@ -15,5 +16,6 @@ spring:
       format_sql: true
 
  redis:
-    host: localhost          # Redis server hostname
+    host: localhost          
     port: 6379 
+# postgresql://localhost:5432/bookingdb 
