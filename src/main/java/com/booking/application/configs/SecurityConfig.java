@@ -49,7 +49,6 @@ public class SecurityConfig {
         return new ProviderManager(providers);
     }
 
-    @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetails);
