@@ -1,7 +1,7 @@
 # 🏨 Booking Backend
 
 A monolithic backend for a hotel booking platform, emphasizing **concurrent booking** capabilities using distributed locking and caching via Redis. The system features key services collaboratively operating to support user auth, property listing, and safe booking flows.
-
+> 📌 **Frontend Repository:** [Frontend Repository](https://github.com/Pixelz123/booking_frontend)
 ---
 
 ## Table of Contents
