@@ -34,29 +34,12 @@ A monolithic backend for a hotel booking platform, emphasizing **concurrent book
 ---
 
 ## Architecture Overview
-
 A diagrammatic representation of service modules and data flow:
+<img width="870" height="492" alt="Screenshot from 2025-07-19 21-15-10" src="https://github.com/user-attachments/assets/1cb285ab-4e60-4f5f-8a3d-9526d0e16b09" />
 
-```
-+-------------------------------------------------------------+
-|                      Booking Backend                       |
-| +------------------+    +------------------+   +----------+|
-| |   Booking        |    |    Redis         |   | Database ||
-| |   Service        |    |    Service        |   |  (SQL)   ||
-| |------------------|    |------------------|   +----------+|
-| |• Creates booking |<-->|• Locks per date  |◄──▶            |
-| |• Uses Redis lock |    |• Caches property|                |
-| +------------------+    +------------------+                |
-|       ↑                                                    |
-|       |                                                    |
-| +------------------+   +------------------+   +----------+ |
-| | User Service     |   | Property Service |   | Auth     | |
-| |------------------|   |------------------|   | Service  | |
-| |• Manages guests/hosts|• Adds/listings  |   |• JWT &   | |
-| |• Manages bookings |   |• Metadata queries|   |• RBAC     | |
-| +------------------+   +------------------+   +----------+ |
-+------------------------------------------------------------+
-```
+
+
+
 
 ---
 
@@ -105,7 +88,7 @@ A diagrammatic representation of service modules and data flow:
 | Cache/Locks | Redis                   |
 | Auth        | JWT + Spring Security   |
 | Build Tool  | Gradle                  |
-| Dev Tools   | JUnit, Mockito          |
+| Dev Tools   | Docker                  |
 
 ---
 
